@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nobel Laureates Feed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="nobel_data.js"></script>
+    <style>
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .fade-in { opacity: 0; transition: opacity 0.4s ease-in-out; }
+        .fade-in.loaded { opacity: 1; }
+        html { scroll-behavior: smooth; }
+        
+        .year-group {
+            scroll-margin-top: 170px; /* Adjusted to account for the double-row layout on mobile devices */
+        }
+        @media (min-width: 640px) {
+            .year-group {
+                scroll-margin-top: 88px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans antialiased text-slate-900 min-h-screen">
+
+    <header class="sticky top-0 bg-white/90 backdrop-blur-md border-b border-slate-200 z-50 p-4 shadow-sm">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <!-- Modified: Changed layout to flex-wrap on mobile so buttons cleanly stack into 2 rows -->
+            <div class="flex flex-wrap sm:flex-nowrap gap-2 sm:overflow-x-auto scrollbar-hide py-1 flex-1" id="filter-container">
+                <button class="filter-btn bg-blue-600 text-white px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="">All Prizes</button>
+                <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="phy">Physics</button>
+                <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="che">Chemistry</button>
+                <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="med">Medicine</button>
+                <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="lit">Literature</button>
+                <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="pea">Peace</button>
+                <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="eco">Economics</button>
+            </div>
+            
+            <div class="sm:hidden flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 shadow-inner">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Jump to Year</span>
+                <select id="mobile-year-select" class="bg-transparent text-sm font-bold text-blue-600 focus:outline-none cursor-pointer ml-4">
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-5xl mx-auto flex px-2 sm:px-4">
+        <aside class="hidden sm:block w-24 sticky top-24 h-[calc(100vh-120px)] overflow-y-auto scrollbar-hide border-r border-slate-200 pr-2 py-4" id="year-sidebar">
+            <div class="flex flex-col gap-1" id="year-list">
+            </div>
+        </aside>
+
+        <main class="flex-1 p-2 sm:p-4 flex flex-col gap-10 max-w-3xl mx-auto w-full" id="feed"></main>
+    </div>
+
+    <script>
+        const feed = document.getElementById('feed');
+        const yearList = document.getElementById('year-list');
+        const sidebar = document.getElementById('year-sidebar');
+        const mobileYearSelect = document.getElementById('mobile-year-select');
+        
+        const START_YEAR = 1901;
+        const END_YEAR = new Date().getFullYear();
+
+        let allPrizes = [];
+        let currentCategory = '';
+        let isManualJumping = false;
+        let isSidebarHovered = false;
+        let lastHighlightedYear = null;
+
+        const categoryMap = {
+            'phy': 'Physics',
+            'che': 'Chemistry',
+            'med': 'Physiology or Medicine',
+            'lit': 'Literature',
+            'pea': 'Peace',
+            'eco': 'Economic Sciences'
+        };
+
+        sidebar.addEventListener('mouseenter', () => { isSidebarHovered = true; });
+        sidebar.addEventListener('mouseleave', () => { isSidebarHovered = false; });
+
+        function updateURLParams() {
+            const url = new URL(window.location.href);
+            if (currentCategory) {
+                url.searchParams.set('category', currentCategory);
+            } else {
+                url.searchParams.delete('category');
+            }
+            if (lastHighlightedYear) {
+                url.searchParams.set('year', lastHighlightedYear);
+            } else {
+                url.searchParams.delete('year');
+            }
+            window.history.replaceState({}, '', url);
+        }
+
+        function loadFiltersFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const catParam = urlParams.get('category');
+            const yearParam = urlParams.get('year');
+
+            if (catParam !== null) {
+                currentCategory = catParam;
+            }
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.cat === currentCategory) {
+                    btn.classList.remove('bg-slate-200', 'text-slate-700', 'hover:bg-slate-300');
+                    btn.classList.add('bg-blue-600', 'text-white');
+                } else {
+                    btn.classList.remove('bg-blue-600', 'text-white');
+                    btn.classList.add('bg-slate-200', 'text-slate-700', 'hover:bg-slate-300');
+                }
+            });
+            return yearParam ? parseInt(yearParam) : null;
+        }
+
+        function initYearNavigationSelectors() {
+            yearList.innerHTML = '';
+            mobileYearSelect.innerHTML = '<option value="" disabled selected>Select Year...</option>';
+            
+            for (let y = START_YEAR; y <= END_YEAR; y++) {
+                const link = document.createElement('a');
+                link.href = `#year-${y}`;
+                link.className = `year-link text-left px-3 py-1 rounded text-xs font-semibold transition-all text-slate-400 hover:text-blue-600 hover:bg-blue-50`;
+                link.textContent = y;
+                link.id = `nav-year-${y}`;
+                link.onclick = (e) => { e.preventDefault(); jumpToSpecificYear(y); };
+                yearList.appendChild(link);
+
+                const option = document.createElement('option');
+                option.value = y;
+                option.textContent = y;
+                mobileYearSelect.appendChild(option);
+            }
+        }
+
+        const yearActiveObserver = new IntersectionObserver(() => {
+            if (isManualJumping) return;
+            
+            let activeYear = null;
+            let minDistance = Infinity;
+            const threshold = window.innerWidth < 640 ? 170 : 88;
+
+            document.querySelectorAll('.year-group').forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom > threshold) {
+                    const distance = Math.abs(rect.top - threshold);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        activeYear = el.dataset.year;
+                    }
+                }
+            });
+
+            if (activeYear) {
+                highlightActiveIndicators(activeYear);
+            }
+        }, { 
+            rootMargin: '-170px 0px -50% 0px', 
+            threshold: [0, 0.1, 0.5] 
+        });
+
+        function highlightActiveIndicators(year) {
+            if (year === lastHighlightedYear) return;
+            lastHighlightedYear = year;
+
+            document.querySelectorAll('.year-link').forEach(l => {
+                l.classList.remove('text-blue-600', 'bg-blue-50', 'scale-110', 'pl-4');
+                l.classList.add('text-slate-400');
+            });
+            
+            const activeLink = document.getElementById(`nav-year-${year}`);
+            if (activeLink) {
+                activeLink.classList.remove('text-slate-400');
+                activeLink.classList.add('text-blue-600', 'bg-blue-50', 'scale-110', 'pl-4');
+                if (!isSidebarHovered) {
+                    activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+
+            if (mobileYearSelect) {
+                mobileYearSelect.value = year;
+            }
+
+            updateURLParams();
+        }
+
+        function jumpToSpecificYear(year, behavior = 'smooth') {
+            const target = document.getElementById(`year-${year}`);
+            if (target) {
+                isManualJumping = true;
+                highlightActiveIndicators(year);
+                target.scrollIntoView({ behavior: behavior, block: 'start' });
+                
+                clearTimeout(window.jumpTimeout);
+                window.jumpTimeout = setTimeout(() => {
+                    isManualJumping = false;
+                }, behavior === 'smooth' ? 800 : 50);
+            }
+        }
+
+        mobileYearSelect.addEventListener('change', (e) => {
+            jumpToSpecificYear(parseInt(e.target.value));
+        });
+
+        function initializeFeed() {
+            feed.innerHTML = '';
+            yearActiveObserver.disconnect();
+
+            for (let y = START_YEAR; y <= END_YEAR; y++) {
+                const prizes = allPrizes.filter(p => {
+                    if (parseInt(p.awardYear) !== y) return false;
+                    if (!currentCategory) return true;
+                    return p.category === categoryMap[currentCategory];
+                });
+
+                if (currentCategory && prizes.length === 0) continue;
+
+                const yearDiv = document.createElement('div');
+                yearDiv.id = `year-${y}`;
+                yearDiv.className = 'year-group flex flex-col gap-4 pb-2';
+                yearDiv.dataset.year = y;
+                
+                yearDiv.innerHTML = `
+                    <div class="flex items-center gap-4 my-1">
+                        <span class="text-xl font-black text-slate-400 tracking-tight">${y}</span>
+                        <div class="flex-1 h-[1px] bg-slate-200 rounded-full"></div>
+                    </div>
+                    <div class="year-cards flex flex-col gap-5"></div>
+                `;
+                
+                const cardsWrapper = yearDiv.querySelector('.year-cards');
+
+                if (prizes.length === 0) {
+                    cardsWrapper.innerHTML = `<div class="text-sm text-slate-400 italic py-1 pl-1">No prizes awarded in this category for ${y}.</div>`;
+                } else {
+                    prizes.forEach(prize => {
+                        prize.laureates.forEach(laur => {
+                            const card = document.createElement('div');
+                            card.className = 'flex flex-col sm:flex-row bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-0.5 group cursor-pointer';
+                            
+                            card.onclick = (e) => {
+                                if (e.target.closest('a')) return;
+                                if (laur.externalLink && laur.externalLink !== '#') {
+                                    window.open(laur.externalLink, '_blank');
+                                }
+                            };
+                            
+                            const activeImgUrl = laur.imageUrl || laur.imageurl;
+                            
+                            const imgHtml = activeImgUrl 
+                                ? `<div class="w-full sm:w-56 h-64 sm:h-auto bg-slate-50 flex-shrink-0 flex items-center justify-center border-b sm:border-b-0 sm:border-r border-slate-100 overflow-hidden relative">
+                                       <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 fade-in" src="${activeImgUrl}" loading="lazy" onload="this.classList.add('loaded')" alt="${laur.name}">
+                                   </div>`
+                                : `<div class="w-full sm:w-56 h-44 sm:h-full min-h-[180px] bg-gradient-to-br from-slate-50 to-slate-100 flex-shrink-0 flex flex-col items-center justify-center border-b sm:border-b-0 sm:border-r border-slate-100 text-slate-300 gap-2 p-4">
+                                       <svg class="w-8 h-8 stroke-current opacity-40" viewBox="0 0 24 24" fill="none"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                       <span class="text-[10px] font-bold uppercase tracking-widest opacity-40">No Portrait Available</span>
+                                   </div>`;
+
+                            card.innerHTML = `
+                                ${imgHtml}
+                                <div class="p-6 flex-1 flex flex-col justify-between gap-4">
+                                    <div>
+                                        <p class="text-[10px] tracking-wider text-blue-600 font-bold uppercase mb-1">${prize.categoryFullName || prize.category}</p>
+                                        <h3 class="text-lg sm:text-xl font-bold text-slate-800 tracking-tight leading-snug group-hover:text-blue-600 transition-colors">${laur.name}</h3>
+                                    </div>
+                                    <div class="text-xs sm:text-sm text-slate-600 italic border-t border-slate-100 pt-3 line-clamp-4 leading-relaxed">"${laur.motivation}"</div>
+                                    
+                                    ${laur.wikipediaUrl ? `
+                                    <div class="pt-3 border-t border-slate-100 flex justify-end">
+                                        <a href="${laur.wikipediaUrl}" target="_blank" class="text-xs font-semibold text-emerald-600 hover:text-emerald-800 hover:underline flex items-center gap-1 z-10">
+                                            Wikipedia Article ↗
+                                        </a>
+                                    </div>` : ''}
+                                </div>
+                            `;
+                            cardsWrapper.appendChild(card);
+                        });
+                    });
+                }
+                
+                feed.appendChild(yearDiv);
+                yearActiveObserver.observe(yearDiv);
+            }
+        }
+
+        function loadLocalData() {
+            if (window.nobelData) {
+                allPrizes = window.nobelData;
+                const initialYear = loadFiltersFromURL();
+                initializeFeed();
+                
+                if (initialYear && initialYear >= START_YEAR && initialYear <= END_YEAR) {
+                    setTimeout(() => {
+                        jumpToSpecificYear(initialYear, 'auto');
+                    }, 150);
+                }
+            } else {
+                feed.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl text-sm font-semibold">
+                        Error: 'nobel_data.js' database file was not found.
+                    </div>`;
+            }
+        }
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetCat = e.target.dataset.cat;
+                
+                // Modified: Revert to "No Topic" / "All Prizes" if user clicks an already active category button
+                if (currentCategory === targetCat && targetCat !== '') {
+                    currentCategory = '';
+                } else {
+                    currentCategory = targetCat;
+                }
+                
+                // Synchronize and update visual active highlights across all topic selectors
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    if (b.dataset.cat === currentCategory) {
+                        b.classList.remove('bg-slate-200', 'text-slate-700', 'hover:bg-slate-300');
+                        b.classList.add('bg-blue-600', 'text-white');
+                    } else {
+                        b.classList.remove('bg-blue-600', 'text-white');
+                        b.classList.add('bg-slate-200', 'text-slate-700', 'hover:bg-slate-300');
+                    }
+                });
+                
+                const yearToPreserve = lastHighlightedYear;
+                initializeFeed();
+                
+                if (yearToPreserve) {
+                    const targetNode = document.getElementById(`year-${yearToPreserve}`);
+                    if (targetNode) {
+                        jumpToSpecificYear(yearToPreserve, 'auto');
+                    } else {
+                        const availableGroups = Array.from(document.querySelectorAll('.year-group'));
+                        if (availableGroups.length > 0) {
+                            const closestGroup = availableGroups.reduce((prev, curr) => {
+                                return Math.abs(parseInt(curr.dataset.year) - yearToPreserve) < Math.abs(parseInt(prev.dataset.year) - yearToPreserve) ? curr : prev;
+                            });
+                            jumpToSpecificYear(parseInt(closestGroup.dataset.year), 'auto');
+                        }
+                    }
+                }
+                
+                updateURLParams();
+            });
+        });
+
+        initYearNavigationSelectors();
+        loadLocalData();
+    </script>
+</body>
+</html>
