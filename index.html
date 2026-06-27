@@ -246,7 +246,7 @@
                             card.onclick = (e) => {
                                 if (e.target.closest('a')) return;
                                 if (laur.externalLink && laur.externalLink !== '#') {
-                                    window.open(laur.externalLink, '_blank');
+                                    window.location.href = laur.externalLink;
                                 }
                             };
                             
@@ -272,7 +272,7 @@
                                     
                                     ${laur.wikipediaUrl ? `
                                     <div class="pt-3 border-t border-slate-100 flex justify-end">
-                                        <a href="${laur.wikipediaUrl}" target="_blank" class="text-xs font-semibold text-emerald-600 hover:text-emerald-800 hover:underline flex items-center gap-1 z-10">
+                                        <a href="${laur.wikipediaUrl}" class="text-xs font-semibold text-emerald-600 hover:text-emerald-800 hover:underline flex items-center gap-1 z-10">
                                             Wikipedia Article ↗
                                         </a>
                                     </div>` : ''}
