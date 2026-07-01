@@ -13,12 +13,13 @@
         .fade-in.loaded { opacity: 1; }
         html { scroll-behavior: smooth; }
         
+        /* Adjusted scroll margins to account for the newly added search bar height */
         .year-group {
-            scroll-margin-top: 170px; /* Adjusted to account for the double-row layout on mobile devices */
+            scroll-margin-top: 220px; 
         }
         @media (min-width: 640px) {
             .year-group {
-                scroll-margin-top: 88px;
+                scroll-margin-top: 140px;
             }
         }
     </style>
@@ -26,28 +27,41 @@
 <body class="bg-slate-100 font-sans antialiased text-slate-900 min-h-screen">
 
     <header class="sticky top-0 bg-white/90 backdrop-blur-md border-b border-slate-200 z-50 p-4 shadow-sm">
-        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-            <!-- Modified: Changed layout to flex-wrap on mobile so buttons cleanly stack into 2 rows -->
-            <div class="flex flex-wrap sm:flex-nowrap gap-2 sm:overflow-x-auto scrollbar-hide py-1 flex-1" id="filter-container">
-                <button class="filter-btn bg-blue-600 text-white px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="">All Prizes</button>
-                <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="phy">Physics</button>
-                <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="che">Chemistry</button>
-                <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="med">Medicine</button>
-                <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="lit">Literature</button>
-                <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="pea">Peace</button>
-                <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="eco">Economics</button>
+        <div class="max-w-5xl mx-auto flex flex-col gap-3">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <!-- Topic Buttons -->
+                <div class="flex flex-wrap sm:flex-nowrap gap-2 sm:overflow-x-auto scrollbar-hide py-1 flex-1" id="filter-container">
+                    <button class="filter-btn bg-blue-600 text-white px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="">All Prizes</button>
+                    <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="phy">Physics</button>
+                    <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="che">Chemistry</button>
+                    <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="med">Medicine</button>
+                    <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="lit">Literature</button>
+                    <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="pea">Peace</button>
+                    <button class="filter-btn bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-5 py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap transition-colors" data-cat="eco">Economics</button>
+                </div>
+                
+                <!-- Mobile Select -->
+                <div class="sm:hidden flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 shadow-inner">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Jump to Year</span>
+                    <select id="mobile-year-select" class="bg-transparent text-sm font-bold text-blue-600 focus:outline-none cursor-pointer ml-4">
+                    </select>
+                </div>
             </div>
-            
-            <div class="sm:hidden flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 shadow-inner">
-                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Jump to Year</span>
-                <select id="mobile-year-select" class="bg-transparent text-sm font-bold text-blue-600 focus:outline-none cursor-pointer ml-4">
-                </select>
+
+            <!-- New Search Bar -->
+            <div class="relative flex items-center w-full">
+                <svg class="w-4 h-4 absolute left-3 text-slate-400 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                <input type="text" id="search-input" placeholder="Search by name, description, topic, or year..." class="w-full pl-9 pr-10 py-2 border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50 transition-all placeholder:text-slate-400 text-slate-700 shadow-inner">
+                <button id="clear-search-btn" class="absolute right-2 text-slate-400 hover:text-slate-700 hidden bg-transparent border-none cursor-pointer focus:outline-none flex items-center justify-center p-1.5 rounded-full hover:bg-slate-200 transition-colors" title="Clear search">
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
             </div>
         </div>
     </header>
 
     <div class="max-w-5xl mx-auto flex px-2 sm:px-4">
-        <aside class="hidden sm:block w-24 sticky top-24 h-[calc(100vh-120px)] overflow-y-auto scrollbar-hide border-r border-slate-200 pr-2 py-4" id="year-sidebar">
+        <!-- Sidebar layout positions adjusted slightly downward for taller header -->
+        <aside class="hidden sm:block w-24 sticky top-36 h-[calc(100vh-150px)] overflow-y-auto scrollbar-hide border-r border-slate-200 pr-2 py-4" id="year-sidebar">
             <div class="flex flex-col gap-1" id="year-list">
             </div>
         </aside>
@@ -61,11 +75,15 @@
         const sidebar = document.getElementById('year-sidebar');
         const mobileYearSelect = document.getElementById('mobile-year-select');
         
+        const searchInput = document.getElementById('search-input');
+        const clearSearchBtn = document.getElementById('clear-search-btn');
+        
         const START_YEAR = 1901;
         const END_YEAR = new Date().getFullYear();
 
         let allPrizes = [];
         let currentCategory = '';
+        let currentSearchTerm = ''; // Added search state
         let isManualJumping = false;
         let isSidebarHovered = false;
         let lastHighlightedYear = null;
@@ -84,16 +102,26 @@
 
         function updateURLParams() {
             const url = new URL(window.location.href);
+            
             if (currentCategory) {
                 url.searchParams.set('category', currentCategory);
             } else {
                 url.searchParams.delete('category');
             }
+            
             if (lastHighlightedYear) {
                 url.searchParams.set('year', lastHighlightedYear);
             } else {
                 url.searchParams.delete('year');
             }
+            
+            // Manage search param
+            if (currentSearchTerm) {
+                url.searchParams.set('search', currentSearchTerm);
+            } else {
+                url.searchParams.delete('search');
+            }
+            
             window.history.replaceState({}, '', url);
         }
 
@@ -101,9 +129,18 @@
             const urlParams = new URLSearchParams(window.location.search);
             const catParam = urlParams.get('category');
             const yearParam = urlParams.get('year');
+            const searchParam = urlParams.get('search'); // Read search param
 
             if (catParam !== null) {
                 currentCategory = catParam;
+            }
+            
+            if (searchParam !== null) {
+                currentSearchTerm = searchParam;
+                if (searchInput) searchInput.value = currentSearchTerm;
+                if (clearSearchBtn && currentSearchTerm.length > 0) {
+                    clearSearchBtn.classList.remove('hidden');
+                }
             }
             
             document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -143,7 +180,8 @@
             
             let activeYear = null;
             let minDistance = Infinity;
-            const threshold = window.innerWidth < 640 ? 170 : 88;
+            // Increased threshold mapping to reflect taller header
+            const threshold = window.innerWidth < 640 ? 220 : 140; 
 
             document.querySelectorAll('.year-group').forEach(el => {
                 const rect = el.getBoundingClientRect();
@@ -160,7 +198,8 @@
                 highlightActiveIndicators(activeYear);
             }
         }, { 
-            rootMargin: '-170px 0px -50% 0px', 
+            // Adjusted rootMargin up to match updated mobile UI thresholds
+            rootMargin: '-220px 0px -50% 0px', 
             threshold: [0, 0.1, 0.5] 
         });
 
@@ -207,27 +246,117 @@
             jumpToSpecificYear(parseInt(e.target.value));
         });
 
+        function highlightText(text, term) {
+            if (!text) return '';
+            if (!term) return text;
+            const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${escapedTerm})`, 'gi');
+            return text.toString().replace(regex, `<mark class="bg-yellow-200 text-slate-900 px-0.5 rounded-sm font-medium">$1</mark>`);
+        }
+
         function initializeFeed() {
             feed.innerHTML = '';
             yearActiveObserver.disconnect();
 
+            // Calculate valid years and topics based on current search term to filter sidebars/buttons
+            let activeCategories = new Set();
+            let activeYears = new Set();
+            
+            if (currentSearchTerm) {
+                const st = currentSearchTerm.toLowerCase();
+                allPrizes.forEach(p => {
+                    const matched = p.laureates.some(laur => 
+                        (laur.name && laur.name.toLowerCase().includes(st)) ||
+                        (laur.motivation && laur.motivation.toLowerCase().includes(st)) ||
+                        (p.awardYear && p.awardYear.toString().includes(st)) ||
+                        (p.category && p.category.toLowerCase().includes(st)) ||
+                        (p.categoryFullName && p.categoryFullName.toLowerCase().includes(st))
+                    );
+                    if (matched) {
+                        activeYears.add(parseInt(p.awardYear));
+                        const shortCat = Object.keys(categoryMap).find(key => categoryMap[key] === p.category);
+                        if (shortCat) activeCategories.add(shortCat);
+                    }
+                });
+            }
+
+            // Update Topic Buttons styling (dim disabled ones)
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                const cat = btn.dataset.cat;
+                if (cat !== '') {
+                    if (currentSearchTerm && !activeCategories.has(cat)) {
+                        btn.classList.add('opacity-30', 'pointer-events-none');
+                    } else {
+                        btn.classList.remove('opacity-30', 'pointer-events-none');
+                    }
+                }
+            });
+
+            // Update Year Selectors visibility
+            document.querySelectorAll('.year-link').forEach(link => {
+                const year = parseInt(link.textContent);
+                if (currentSearchTerm && !activeYears.has(year)) {
+                    link.classList.add('hidden');
+                } else {
+                    link.classList.remove('hidden');
+                }
+            });
+
+            Array.from(mobileYearSelect.options).forEach(opt => {
+                if (opt.value === "") return;
+                const year = parseInt(opt.value);
+                if (currentSearchTerm && !activeYears.has(year)) {
+                    opt.hidden = true;
+                } else {
+                    opt.hidden = false;
+                }
+            });
+
             for (let y = START_YEAR; y <= END_YEAR; y++) {
-                const prizes = allPrizes.filter(p => {
-                    if (parseInt(p.awardYear) !== y) return false;
-                    if (!currentCategory) return true;
-                    return p.category === categoryMap[currentCategory];
+                
+                const prizes = [];
+                // First gather the prizes matching the year
+                const yearPrizes = allPrizes.filter(p => parseInt(p.awardYear) === y);
+                
+                yearPrizes.forEach(p => {
+                    // Check category match
+                    if (currentCategory && p.category !== categoryMap[currentCategory]) return;
+                    
+                    let matchedLaureates = p.laureates;
+                    
+                    // Check search text matches inside laureates & prize meta info
+                    if (currentSearchTerm) {
+                        const st = currentSearchTerm.toLowerCase();
+                        matchedLaureates = p.laureates.filter(laur => {
+                            return (
+                                (laur.name && laur.name.toLowerCase().includes(st)) ||
+                                (laur.motivation && laur.motivation.toLowerCase().includes(st)) ||
+                                (p.awardYear && p.awardYear.toString().includes(st)) ||
+                                (p.category && p.category.toLowerCase().includes(st)) ||
+                                (p.categoryFullName && p.categoryFullName.toLowerCase().includes(st))
+                            );
+                        });
+                    }
+                    
+                    // Only keep the prize object if there's at least one matching laureate inside it
+                    if (matchedLaureates.length > 0) {
+                        // Push a copy of the prize mapped strictly to the matched laureates
+                        prizes.push({ ...p, laureates: matchedLaureates });
+                    }
                 });
 
-                if (currentCategory && prizes.length === 0) continue;
+                // Hide the whole year block if user actively filtered it to empty via category OR search text
+                if ((currentCategory || currentSearchTerm) && prizes.length === 0) continue;
 
                 const yearDiv = document.createElement('div');
                 yearDiv.id = `year-${y}`;
                 yearDiv.className = 'year-group flex flex-col gap-4 pb-2';
                 yearDiv.dataset.year = y;
                 
+                const hYear = highlightText(y.toString(), currentSearchTerm);
                 yearDiv.innerHTML = `
                     <div class="flex items-center gap-4 my-1">
-                        <span class="text-xl font-black text-slate-400 tracking-tight">${y}</span>
+                        <span class="text-xl font-black text-slate-400 tracking-tight">${hYear}</span>
                         <div class="flex-1 h-[1px] bg-slate-200 rounded-full"></div>
                     </div>
                     <div class="year-cards flex flex-col gap-5"></div>
@@ -235,6 +364,7 @@
                 
                 const cardsWrapper = yearDiv.querySelector('.year-cards');
 
+                // This will effectively only show if no filters are chosen but a year genuinely had no awards natively.
                 if (prizes.length === 0) {
                     cardsWrapper.innerHTML = `<div class="text-sm text-slate-400 italic py-1 pl-1">No prizes awarded in this category for ${y}.</div>`;
                 } else {
@@ -261,14 +391,18 @@
                                        <span class="text-[10px] font-bold uppercase tracking-widest opacity-40">No Portrait Available</span>
                                    </div>`;
 
+                            const hCatName = highlightText(prize.categoryFullName || prize.category, currentSearchTerm);
+                            const hLaurName = highlightText(laur.name, currentSearchTerm);
+                            const hMotivation = highlightText(laur.motivation, currentSearchTerm);
+
                             card.innerHTML = `
                                 ${imgHtml}
                                 <div class="p-6 flex-1 flex flex-col justify-between gap-4">
                                     <div>
-                                        <p class="text-[10px] tracking-wider text-blue-600 font-bold uppercase mb-1">${prize.categoryFullName || prize.category}</p>
-                                        <h3 class="text-lg sm:text-xl font-bold text-slate-800 tracking-tight leading-snug group-hover:text-blue-600 transition-colors">${laur.name}</h3>
+                                        <p class="text-[10px] tracking-wider text-blue-600 font-bold uppercase mb-1">${hCatName}</p>
+                                        <h3 class="text-lg sm:text-xl font-bold text-slate-800 tracking-tight leading-snug group-hover:text-blue-600 transition-colors">${hLaurName}</h3>
                                     </div>
-                                    <div class="text-xs sm:text-sm text-slate-600 italic border-t border-slate-100 pt-3 line-clamp-4 leading-relaxed">"${laur.motivation}"</div>
+                                    <div class="text-xs sm:text-sm text-slate-600 italic border-t border-slate-100 pt-3 line-clamp-4 leading-relaxed">"${hMotivation}"</div>
                                     
                                     ${laur.wikipediaUrl ? `
                                     <div class="pt-3 border-t border-slate-100 flex justify-end">
@@ -285,6 +419,16 @@
                 
                 feed.appendChild(yearDiv);
                 yearActiveObserver.observe(yearDiv);
+            }
+            
+            // Empty state if entire feed is aggressively filtered to zero matches
+            if (feed.children.length === 0) {
+                feed.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-20 text-slate-400 gap-4">
+                        <svg class="w-16 h-16 opacity-30" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <p class="text-lg font-semibold">No laureates match your search.</p>
+                        <p class="text-sm">Try adjusting your filters or search terms.</p>
+                    </div>`;
             }
         }
 
@@ -311,14 +455,12 @@
             btn.addEventListener('click', (e) => {
                 const targetCat = e.target.dataset.cat;
                 
-                // Modified: Revert to "No Topic" / "All Prizes" if user clicks an already active category button
                 if (currentCategory === targetCat && targetCat !== '') {
                     currentCategory = '';
                 } else {
                     currentCategory = targetCat;
                 }
                 
-                // Synchronize and update visual active highlights across all topic selectors
                 document.querySelectorAll('.filter-btn').forEach(b => {
                     if (b.dataset.cat === currentCategory) {
                         b.classList.remove('bg-slate-200', 'text-slate-700', 'hover:bg-slate-300');
@@ -349,6 +491,31 @@
                 
                 updateURLParams();
             });
+        });
+
+        // Event listener for the Search Input Field
+        searchInput.addEventListener('input', (e) => {
+            currentSearchTerm = e.target.value;
+            
+            if (currentSearchTerm.length > 0) {
+                clearSearchBtn.classList.remove('hidden');
+            } else {
+                clearSearchBtn.classList.add('hidden');
+            }
+            
+            initializeFeed();
+            updateURLParams();
+        });
+
+        // Event listener for clearing the Search Input via the 'X' button
+        clearSearchBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            currentSearchTerm = '';
+            clearSearchBtn.classList.add('hidden');
+            
+            initializeFeed();
+            updateURLParams();
+            searchInput.focus(); // Retain focus logically for the user
         });
 
         initYearNavigationSelectors();
