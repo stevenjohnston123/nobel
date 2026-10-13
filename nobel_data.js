@@ -12932,5 +12932,127 @@ window.nobelData = [
         "wikipediaUrl": "https://en.wikipedia.org/wiki/Shimon_Sakaguchi"
       }
     ]
+  },
+    {
+    "awardYear": "2026",
+    "category": "Physiology or Medicine",
+    "categoryFullName": "The Nobel Prize in Physiology or Medicine",
+    "laureates": [
+      {
+        "id": "1061",
+        "name": "Karl Deisseroth",
+        "motivation": "for their discoveries concerning light-gated ion channels and optogenetics",
+        "externalLink": "https://www.nobelprize.org/prizes/medicine/2026/deisseroth/facts/",
+        "imageUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Karl%20Deisseroth%20by%20Christopher%20Michel%2004.jpg",
+        "wikipediaUrl": "https://en.wikipedia.org/wiki/Karl_Deisseroth"
+      },
+      {
+        "id": "1062",
+        "name": "Peter Hegemann",
+        "motivation": "for their discoveries concerning light-gated ion channels and optogenetics",
+        "externalLink": "https://www.nobelprize.org/prizes/medicine/2026/hegemann/facts/",
+        "imageUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Peter%20Hegemann.jpg",
+        "wikipediaUrl": "https://en.wikipedia.org/wiki/Peter_Hegemann"
+      },
+      {
+        "id": "1063",
+        "name": "Georg Nagel",
+        "motivation": "for their discoveries concerning light-gated ion channels and optogenetics",
+        "externalLink": "https://www.nobelprize.org/prizes/medicine/2026/nagel/facts/",
+        "imageUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Prof.%20Dr.%20Georg%20Nagel.png",
+        "wikipediaUrl": "https://en.wikipedia.org/wiki/Georg_Nagel"
+      }
+    ]
+  },
+  {
+    "awardYear": "2026",
+    "category": "Physics",
+    "categoryFullName": "The Nobel Prize in Physics",
+    "laureates": [
+      {
+        "id": "1064",
+        "name": "Francis Halzen",
+        "motivation": "for decisive contributions to the IceCube Neutrino Observatory and the discovery of high-energy neutrinos of astrophysical origin",
+        "externalLink": "https://www.nobelprize.org/prizes/physics/2026/halzen/facts/",
+        "imageUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Francis%20Halzen%20%282025%29.jpg",
+        "wikipediaUrl": "https://en.wikipedia.org/wiki/Francis_Halzen"
+      }
+    ]
+  },
+  {
+    "awardYear": "2026",
+    "category": "Peace",
+    "categoryFullName": "The Nobel Peace Prize",
+    "laureates": [
+      {
+        "id": "1068",
+        "name": "Navi Pillay",
+        "motivation": "for her efforts to promote peace and international law",
+        "externalLink": "https://www.nobelprize.org/prizes/peace/2026/pillay/facts/",
+        "imageUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Navi%20Pillay%20June%202014.jpg",
+        "wikipediaUrl": "https://en.wikipedia.org/wiki/Navi_Pillay"
+      }
+    ]
+  },
+  {
+    "awardYear": "2026",
+    "category": "Literature",
+    "categoryFullName": "The Nobel Prize in Literature",
+    "laureates": [
+      {
+        "id": "1067",
+        "name": "Anne Carson",
+        "motivation": "for her bold and inventive oeuvre that, in playful dialogue with the classical tradition, has created new forms for contemporary literature",
+        "externalLink": "https://www.nobelprize.org/prizes/literature/2026/carson/facts/",
+        "imageUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Anne%20Carson%2C%20poet%2C%20at%20the%202024%20National%20Book%20Awards%20finalist%20reading%200%20%28cropped%29.jpg",
+        "wikipediaUrl": "https://en.wikipedia.org/wiki/Anne_Carson"
+      }
+    ]
+  },
+  {
+    "awardYear": "2026",
+    "category": "Economic Sciences",
+    "categoryFullName": "The Sveriges Riksbank Prize in Economic Sciences in Memory of Alfred Nobel",
+    "laureates": [
+      {
+        "id": "1069",
+        "name": "Robert E. Hall",
+        "motivation": "for microeconomic foundations of macroeconomic stabilisation",
+        "externalLink": "https://www.nobelprize.org/prizes/economic-sciences/2026/hall/facts/",
+        "imageUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Hall-Robert%20Headshot.png",
+        "wikipediaUrl": "https://en.wikipedia.org/wiki/Robert_Hall_(economist)"
+      },
+      {
+        "id": "1070",
+        "name": "Michael Woodford",
+        "motivation": "for microeconomic foundations of macroeconomic stabilisation",
+        "externalLink": "https://www.nobelprize.org/prizes/economic-sciences/2026/woodford/facts/",
+        "imageUrl": null,
+        "wikipediaUrl": "https://en.wikipedia.org/wiki/Michael_Dean_Woodford"
+      }
+    ]
+  },
+  {
+    "awardYear": "2026",
+    "category": "Chemistry",
+    "categoryFullName": "The Nobel Prize in Chemistry",
+    "laureates": [
+      {
+        "id": "1065",
+        "name": "Henri B. Kagan",
+        "motivation": "for the discovery of non-linear effects and autocatalysis in asymmetric organic synthesis",
+        "externalLink": "https://www.nobelprize.org/prizes/chemistry/2026/kagan/facts/",
+        "imageUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Henri%20Kagan%20%282014%29.jpg",
+        "wikipediaUrl": "https://en.wikipedia.org/wiki/Henri_B._Kagan"
+      },
+      {
+        "id": "1066",
+        "name": "Kenso Soai",
+        "motivation": "for the discovery of non-linear effects and autocatalysis in asymmetric organic synthesis",
+        "externalLink": "https://www.nobelprize.org/prizes/chemistry/2026/soai/facts/",
+        "imageUrl": "http://commons.wikimedia.org/wiki/Special:FilePath/Kenso%20Soai.jpg",
+        "wikipediaUrl": "https://en.wikipedia.org/wiki/Kens%C5%8D_Soai"
+      }
+    ]
   }
 ];
